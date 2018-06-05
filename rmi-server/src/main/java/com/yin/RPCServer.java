@@ -16,6 +16,7 @@ public class RPCServer {
             //循环监听客户端的请求
             while (true) {
                 Socket socket = serverSocket.accept();
+                System.out.println("监听到一个请求");
                 executorService.execute(new processorHandler(socket, service));
             }
         } catch (IOException e) {

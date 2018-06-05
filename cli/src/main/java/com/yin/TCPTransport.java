@@ -17,24 +17,56 @@ public class TCPTransport {
         this.port = port;
     }
 
-    public Object send(RpcRequest rpcRequest) {
+    public Socket newSocket() {
+        Socket socket = null;
         try {
-            Socket socket = new Socket(this.host, this.port);
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+            socket = new Socket(this.host,this.port);
+            System.out.println("创建一个Socket连接");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return socket;
+    }
+
+    public Object send(RpcRequest rpcRequest) {
+        ObjectOutputStream objectOutputStream = null;
+        ObjectInputStream objectInputStream = null;
+        Socket socket = null;
+        try {
+            socket = newSocket();
+            objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
 
             objectOutputStream.writeObject(rpcRequest);
 
             objectOutputStream.flush();
 
             //获取输入流信息
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
             return objectInputStream.readObject();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }finally {
-
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (objectInputStream != null){
+                try {
+                    objectInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (objectInputStream != null){
+                try {
+                    objectInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return null;
     }
